@@ -1,0 +1,10 @@
+{
+    "file_extensions": ["pdf", "doc", "docx", "txt"],
+    "scan_paths": [ 
+        "/path/to/documents/",
+        "/another/path/to/documents/"
+    ],
+    "output_dir": "/path/to/paperless-ngx/consume/folder",
+    "history_store_path": "/path/to/history.json",
+    "calculate_md5_hash": true
+}
