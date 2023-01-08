@@ -1,5 +1,5 @@
 {
-    "file_extensions": ["pdf", "doc", "docx", "txt"],
+    "file_extensions": ["pdf", "png", "jpg", "jpeg", "tiff", "txt", "doc", "docx", "odt", "ppt", "pptx", "odp", "xls", "xlsx", "ods"],
     "scan_paths": [ 
         "/path/to/documents/",
         "/another/path/to/documents/"
