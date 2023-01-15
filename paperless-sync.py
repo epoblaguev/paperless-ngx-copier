@@ -63,7 +63,7 @@ def generate_hash(file_path: str) -> str:
     return file_hash.hexdigest()
 
 
-def process_file(file_path: str, config: Config, file_history: FileHistory):
+def process_file(file_path: str, config: Config, file_history: FileHistory) -> bool:
     file_hash = generate_hash(file_path) if config.calculate_md5_hash else 'NOT CALCULATED'
     modified_time = path.getmtime(file_path)
 
@@ -82,7 +82,7 @@ def process_file(file_path: str, config: Config, file_history: FileHistory):
 
     if not file_changed:
         print('File has not changed since it was last copied')
-        return
+        return False
 
     output_filename = path.basename(file_path)
     output_path = path.join(config.output_dir, output_filename)
@@ -98,8 +98,14 @@ def process_file(file_path: str, config: Config, file_history: FileHistory):
     new_historic_record = HistoryElement(file_path, file_hash, modified_time)
     file_history.setElement(new_historic_record)
 
+    return True
+
 
 def main(config_path: str):
+    files_copied = 0
+    files_unchanged = 0
+    files_in_error = 0
+
     # Read Config
     with open(config_path) as config_file:
         config = Config(**json.load(config_file))
@@ -114,7 +120,22 @@ def main(config_path: str):
                 if not file.lower().endswith(file_extensions):
                     continue
                 file_path = path.join(root, file)
-                process_file(file_path, config, file_history)
+                try:
+                    result = process_file(file_path, config, file_history)
+                    if result:
+                        files_copied += 1
+                    else:
+                        files_unchanged += 1
+                except Exception as ex:
+                    print(ex)
+                    files_in_error += 1
+
+    print(f"""
+    \nCOMPLETE:
+    \tFiles Copied: {files_copied}
+    \tFiles Unchanged: {files_unchanged}
+    \tFiles With Errors: {files_in_error}
+    """)
 
 if __name__ == '__main__':
     try:
