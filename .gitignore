@@ -1,2 +1,6 @@
 configs
 .DS_Store
+
+build/
+test/target/*
+test/history.json

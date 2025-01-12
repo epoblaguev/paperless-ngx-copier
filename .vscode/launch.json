@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${fileDirname}",
-            "args": ["config-example.json"]
+            "args": ["test/config-example.json"]
         }
     ]
 }
