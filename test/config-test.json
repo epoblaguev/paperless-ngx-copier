@@ -1,0 +1,9 @@
+{
+    "file_extensions": ["json", "txt", "pdf", "png", "jpg", "jpeg", "tiff", "txt", "doc", "docx", "odt", "ppt", "pptx", "odp", "xls", "xlsx", "ods"],
+    "scan_paths": [ 
+        "/workspaces/paperless-ngx-copier/"
+    ],
+    "output_dir": "/workspaces/paperless-ngx-copier/test/target",
+    "history_store_path": "/workspaces/paperless-ngx-copier/test/history.json",
+    "calculate_md5_hash": true
+}
