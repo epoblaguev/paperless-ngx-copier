@@ -5,3 +5,4 @@ configs
 # Added by cargo
 
 /target
+test/target

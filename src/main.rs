@@ -1,7 +1,8 @@
 use std::{arch::aarch64::float32x2_t, error::Error, fmt::Display, fs::File, io::BufReader, path::Path};
 use serde_json::{self, Map};
-use serde::Deserialize;
-use clap::Parser;
+use serde::{Serialize, Deserialize};
+use clap::{builder::OsStr, Parser};
+use walkdir::WalkDir;
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
@@ -29,13 +30,13 @@ impl FileHistory {
     }
 }
 
-#[derive(Deserialize, Debug)]
-struct Config {
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Config {
     file_extensions: Vec<String>,
     scan_paths: Vec<String>,
     output_dir: String,
     history_store_path: String,
-    calculate_md5_hash: bool
+    calculate_md5_hash: bool,
 }
 
 fn read_config(config_path: String) -> Result<Config, Box<dyn Error>> {
@@ -47,12 +48,26 @@ fn read_config(config_path: String) -> Result<Config, Box<dyn Error>> {
     Ok(config)
 }
 
-fn copy_files(config: Config) {
+fn copy_files(config: &Config) -> Result<(), Box<dyn Error>> {
     let mut files_copied = 0;
     let mut files_unchanged = 0;
     let mut files_in_error = 0;
 
-    let file_extensions = config.file_extensions.iter().map(|e| e.to_lowercase());
+    let file_extensions: Vec<String> = config.file_extensions.iter().map(|e| e.to_lowercase()).collect();
+
+    println!("{}", file_extensions.join(", "));
+
+    for scan_path in &config.scan_paths {
+        for entry in WalkDir::new(scan_path) {
+            let entry = entry?;
+            if entry.file_type().is_file() {
+                println!("{}", entry.path().display());
+                println!("{}", entry.path().extension());
+            }
+        }
+    }
+
+    Ok(())
 }
 
 fn main() {
@@ -62,6 +77,10 @@ fn main() {
 
     let config = read_config(args.config_path).expect("Error");
     
-    copy_files(config);
+    dbg!(&config);
+
+    println!("{}", &config.file_extensions.join(","));
+    
+    copy_files(&config);
     // dbg!(config);
 }
