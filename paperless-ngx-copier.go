@@ -21,6 +21,20 @@ type Config struct {
 	CalculateMD5Hash bool     `json:"calculate_md5_hash"`
 }
 
+func NewConfig(path string) (Config, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return Config{}, err
+	}
+
+	var config Config
+	if err := json.Unmarshal(data, &config); err != nil {
+		return Config{}, err
+	}
+
+	return config, nil
+}
+
 type HistoryElement struct {
 	FilePath     string
 	MD5Hash      string
@@ -94,27 +108,6 @@ func (fh *FileHistory) setElement(historyElement HistoryElement) error {
 	return fh.saveHistoryFile()
 }
 
-func readConfig() Config {
-	args := os.Args[1:]
-	fmt.Println(args)
-
-	if len(args) < 1 {
-		panic("Please provide valid path to config file")
-	}
-
-	data, err := os.ReadFile(args[0])
-	if err != nil {
-		panic(err)
-	}
-
-	var config Config
-	if err := json.Unmarshal(data, &config); err != nil {
-		panic(err)
-	}
-
-	return config
-}
-
 func generateHash(filePath string) (string, error) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
@@ -129,14 +122,12 @@ func copyFile(source string, dest string) error {
 	if err != nil {
 		return err
 	}
-
 	defer srcFile.Close()
 
 	destFile, err := os.Create(dest)
 	if err != nil {
 		return err
 	}
-
 	defer destFile.Close()
 
 	if _, err := io.Copy(destFile, srcFile); err != nil {
@@ -146,7 +137,7 @@ func copyFile(source string, dest string) error {
 	return nil
 }
 
-func processFile(filePath string, fileInfo fs.FileInfo, config Config, fileHistory FileHistory) (bool, error) {
+func processFile(filePath string, fileInfo fs.FileInfo, config Config, fileHistory *FileHistory) (bool, error) {
 	modifiedTime := fileInfo.ModTime().UnixNano()
 	fileHash := "NOT CALCULATED"
 	if config.CalculateMD5Hash {
@@ -205,7 +196,17 @@ func processFile(filePath string, fileInfo fs.FileInfo, config Config, fileHisto
 }
 
 func main() {
-	config := readConfig()
+	args := os.Args[1:]
+	fmt.Println(args)
+
+	if len(args) < 1 {
+		panic("Please provide valid path to config file")
+	}
+
+	config, err := NewConfig(args[0])
+	if err != nil {
+		panic(err)
+	}
 
 	filesCopied := 0
 	filesUnchanged := 0
@@ -237,7 +238,7 @@ func main() {
 
 			fmt.Println(path)
 
-			result, err := processFile(path, info, config, fileHistory)
+			result, err := processFile(path, info, config, &fileHistory)
 			if err != nil {
 				filesInError++
 			} else if result {
