@@ -1,2 +1,5 @@
 configs
 .DS_Store
+dist
+build
+paperless-sync.spec
