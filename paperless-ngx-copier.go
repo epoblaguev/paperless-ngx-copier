@@ -32,7 +32,15 @@ func NewConfig(path string) (Config, error) {
 		return Config{}, err
 	}
 
+	config.formatExtensions()
+
 	return config, nil
+}
+
+func (config *Config) formatExtensions() {
+	for i, extension := range config.FileExtensions {
+		config.FileExtensions[i] = strings.ToLower(strings.TrimLeft(extension, "."))
+	}
 }
 
 type HistoryElement struct {
@@ -211,10 +219,6 @@ func main() {
 	filesCopied := 0
 	filesUnchanged := 0
 	filesInError := 0
-
-	for i := 0; i < len(config.FileExtensions); i++ {
-		config.FileExtensions[i] = strings.TrimLeft(strings.ToLower(config.FileExtensions[i]), ".")
-	}
 
 	fmt.Println(config.FileExtensions)
 
