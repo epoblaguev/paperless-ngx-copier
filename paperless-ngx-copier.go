@@ -178,9 +178,9 @@ func processFile(filePath string, fileInfo fs.FileInfo, config Config, fileHisto
 	outputFileName := fileInfo.Name()
 	outputPath := path.Join(config.OutputDir, outputFileName)
 
-	for counter := 0; ; counter++ {
+	for counter := 1; ; counter++ {
 		if _, err := os.Stat(outputPath); err == nil {
-			filename := fmt.Sprint("(Copy ", counter, ")", outputFileName)
+			filename := fmt.Sprint("(Copy ", counter, ") ", outputFileName)
 			outputPath = path.Join(config.OutputDir, filename)
 		} else if os.IsNotExist(err) {
 			break
@@ -244,6 +244,7 @@ func main() {
 
 			result, err := processFile(path, info, config, &fileHistory)
 			if err != nil {
+				fmt.Println(err)
 				filesInError++
 			} else if result {
 				filesCopied++
