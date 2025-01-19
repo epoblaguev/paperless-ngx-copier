@@ -2,10 +2,11 @@
 A script for copying new files to the paperless-ngx consume directory
 
 ## Quick Start ##
-1. Create a JSON configuration file based on the [example config](config-example.json) in this repo.
-2. Run paperless-sync.py with the path to the config file as the only parameter:
+1. Download proper binary from the [releases](https://github.com/epoblaguev/paperless-ngx-copier/releases).
+2. Create a JSON configuration file based on the [example config](config-example.json) in this repo.
+3. Run the binary with the path to the config file as the only parameter. For example
       ```bash
-      python3 paperless-sync.py /path/to/config.json
+      ./paperless-ngx-copier_linux_x86 /path/to/config.json
       ```
       
 ## Config File ##
